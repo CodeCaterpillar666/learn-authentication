@@ -4,6 +4,7 @@ const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs/dist/bcrypt");
 const Schema = mongoose.Schema;
 
 // MongoDB url
@@ -73,17 +74,63 @@ app.post(
 
 // sign-up controller
 app.get("/sign-up", (req, res) => res.render("sign-up-form"));
-app.post("/sign-up", (req, res, next) => {
-    const user = new User({
-      username: req.body.username,
-      password: req.body.password
-    }).save(err => {
-      if (err) { 
-        return next(err);
-      }
-      res.redirect("/");
-    });
-  });
+
+/* Three valid sign-up post method to
+   1.create a new user and then
+   2.store its information(username and password) into mongodb
+   The three methods difference:
+   1.one without bcrypt, which means we save whatever entered and posted into mongodb as it is
+   2.one with async bcrypt.hash
+   3.one with sync bcrypt.hash
+*/
+
+// // Valid post method without bcrypt
+// app.post("/sign-up", (req, res, next) => {
+//     const user = new User({
+//       username: req.body.username,
+//       password: req.body.password
+//     }).save(err => {
+//       if (err) { 
+//         return next(err);
+//       }
+//       res.redirect("/");
+//     });
+//   });
+
+// // Valid post method with bcrypt async hash function
+// app.post("/sign-up", (req, res, next) => {
+//     // https://openbase.com/js/bcryptjs/documentation#usage---async
+//     bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
+//         if (err) {
+//             console.log(err);
+//         } else {
+//             const user = new User({
+//                 username: req.body.username,
+//                 password: hashedPassword,
+//             }).save(err => {
+//                 if (err) { 
+//                     return next(err);
+//                 }
+//                 res.redirect("/");
+//             });
+//         }
+//     });
+// });
+
+// // Valid post method with bcrypt sync hash function
+// app.post("/sign-up", (req, res, next) => {
+//     // https://openbase.com/js/bcryptjs/documentation#usage---sync
+//     const hashedPassword = bcrypt.hashSync(req.body.password, 10);
+//     const user = new User({
+//         username: req.body.username,
+//         password: hashedPassword,
+//     }).save(err => {
+//         if (err) { 
+//             return next(err);
+//         }
+//         res.redirect("/");
+//     });
+// });
 
 // log-out controller/router
 app.get("/log-out", (req, res) => {
