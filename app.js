@@ -85,4 +85,10 @@ app.post("/sign-up", (req, res, next) => {
     });
   });
 
+// log-out controller/router
+app.get("/log-out", (req, res) => {
+  req.logout();
+  res.redirect("/");
+});
+
 app.listen(3000, () => console.log("app listening on port 3000!"));
