@@ -59,7 +59,9 @@ app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 
 // index controller
-app.get("/", (req, res) => res.render("index"));
+app.get("/", (req, res) => {
+    res.render("index", { user: req.user });
+});
 
 app.post(
     "/log-in",
